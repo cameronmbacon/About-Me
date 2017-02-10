@@ -1,3 +1,7 @@
+* {
+  border: solid black 1px;
+}
+
 body {
   width: auto;
   background-color: green;
