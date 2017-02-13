@@ -1,10 +1,10 @@
 'use strict';
 
+var userConfirm = false;
 var userGuess = '';
+var userName = '';
 var totalScore = 0;
-var randNumAnswer = Math.floor(Math.random() * 14);
-var attemptsForSix = 4;
-var attemptsForSeven = 6;
+var randNumAnswer = Math.floor((Math.random() * 14) + 1);
 var resultsToPage = document.getElementById('gameContent');
 var resultsString = '';
 
@@ -18,10 +18,6 @@ var questionSeven = 'Can you guess one of my top 3 favorite animals? You get 6 c
 
 var welcomeMessage = 'Hello, this is Cameron\'s Guessing Game. Press \'OK\' if you would like to play.';
 var messageOne = 'Great! Before we get started, what is your name?';
-var messageTwo = 'Good to meet you, ' + userName + '! The first 5 questions are yes/no questions. Please respond with \'Y\' or \'N\'.';
-var messageThree = 'You guessed a little too high. ' + attemptsForSix + ' attempts remaining.';
-var messageFour = 'You guessed a little too low. ' + attemptsForSix + ' attempts remaining.';
-var messageFive = 'Sorry, that\'s not one of them. ' + attemptsForSeven + ' remaining.';
 var noPlayMessage = 'Alright. Well, that\'s okay I guess...';
 var goodByeMessage = 'I hope you enjoyed Cameron\'s Guessing Game. Thank you for playing and do come back!';
 var correctMessage = 'Correct!';
@@ -33,123 +29,137 @@ var animalOne = answers[6].slice(0, 4);
 var animalTwo = answers[6].slice(5, 9);
 var animalThree = answers[6].slice(10, 20);
 
-//start of the guessing game
-var userConfirm = confirm(welcomeMessage);
-
-if (userConfirm) {
-  var userName = prompt(messageOne);
-  alert(messageTwo);
-} else {
-  alert(noPlayMessage);
-}
-
-for (var i = 0; i < answers.length; i++) {
-  var isValid = false;
-  do {
-    userGuess = prompt(questions[i]);
-    if (i < 5) {
-      if (userGuess.toUpperCase().charAt(0) === 'Y' || userGuess.toUpperCase().charAt(0) === 'N') {
-        isValid = true;
-      }
-    } else if (i === 5) {
-      if (!isNaN(parseInt(userGuess, 10))) {
-        userGuess = Math.floor(userGuess);
-        isValid = true;
-      }
-    } else if (i === 6) {
-      isValid = true;
-    }
-  } while(!isValid);
-
-  if (i < 5) {
-    if (userGuess.toUpperCase().charAt(0) === answers[i]) {
-      alert(correctMessage);
-
-      resultsString += 'question: ' + questions[i] + '\nanswer: ' + answers[i] + '\nresult: ' + correctMessage + '\n\n';
-
-      console.log('question: ' + questions[i] + '\nanswer: ' + answers[i] + '\nresult: ' + correctMessage);
-
-      totalScore++;
-    } else {
-      alert(wrongMessage);
-
-      resultsString += 'question: ' + questions[i] + '\nanswer: ' + answers[i] + '\nresult: ' + wrongMessage + '\n\n';
-
-      console.log('question: ' + questions[i] + '\nanswer: ' + answers[i] + '\nresult: ' + wrongMessage);
-    }
-  } else if (i === 5) {
-    var randGameComplete = false;
-    do {
-      if (userGuess === randNumAnswer) {
-        alert(correctMessage);
-
-        resultsString += 'question: ' + questions[i] + '\nanswer: ' + answers[i] + '\nresult: ' + correctMessage + '\n\n';
-
-        console.log('question: ' + questions[i] + '\nanswer: ' + answers[i] + '\nresult: ' + correctMessage);
-
-        randGameComplete = true;
-
-        totalScore++;
-      } else if ((attemptsForSix - 1) > 0) {
-        attemptsForSix--;
-        if (userGuess > randNumAnswer) {
-          alert(messageThree);
-        } else {
-          alert(messageFour);
-        }
-
-        var isValidNum = false;
-
-        do {
-          userGuess = prompt(questions[i]);
-
-          if (!isNaN(parseInt(userGuess, 10))) {
-            userGuess = Math.floor(userGuess);
-            isValid = true;
-          }
-        } while (!isValidNum);
-      } else {
-        alert(wrongMessage);
-
-        resultsString += 'question: ' + questions[i] + '\nanswer: ' + answers[i] + '\nresult: ' + wrongMessage + '\n\n';
-
-        console.log('question: ' + questions[i] + '\nanswer: ' + answers[i] + '\nresult: ' + wrongMessage);
-
-        randGameComplete = true;
-      }
-    } while (!randGameComplete);
-  } else if (i === 6) {
-    console.log(animalOne + '\n' + animalTwo + '\n' + animalThree);
-
-    var sevenComplete = false;
-
-    do {
-      if (userGuess.toUpperCase() === animalOne || userGuess.toUpperCase() === animalTwo || userGuess.toUpperCase() === animalThree) {
-        alert(correctMessage);
-
-        resultsString += 'question: ' + questions[i] + '\nanswer: ' + answers[i] + '\nresult: ' + correctMessage + '\n\n';
-
-        console.log('question: ' + questions[i] + '\nanswer: ' + answers[i] + '\nresult: ' + correctMessage);
-
-        totalScore++;
-      } else if ((attemptsForSeven - 1) > 0) {
-        attemptsForSeven--;
-        alert(messageFive);
-        sevenComplete = true;
-      }
-    } while (!sevenComplete);
+//function declarations
+function getUserConfirm(msg) {
+  var wantsToPlay = confirm(msg);
+  if (wantsToPlay) {
+    return wantsToPlay;
   } else {
-    alert(wrongMessage);
-
-    resultsString += 'question: ' + questions[i] + '\nanswer: ' + answers[i] + '\nresult: ' + wrongMessage + '\n\n';
-
-    console.log('question: ' + questions[i] + '\nanswer: ' + answers[i] + '\nresult: ' + wrongMessage);
-    sevenComplete = true;
+    alert('Come on! Give it a try!');
   }
 }
 
-resultsString += 'You answered ' + totalScore + ' out of ' + questions.length + '!';
+function getUserName(msg1) {
+  var name = prompt(msg1);
+  var messageTwo = 'Good to meet you, ' + name + '! The first 5 questions are yes/no questions. Please respond with \'Y\' or \'N\'.';
+  alert(messageTwo);
+  return name;
+}
 
-resultsToPage.textContent = resultsString;
+function displayQuestion(question) {
+  var guess = prompt(question);
+  return guess;
+}
+
+function isValidResponse(guess, index, question) {
+  var valid = false;
+  do {
+    if (index < 5) {
+      if (guess.toUpperCase() === 'Y' || guess.toUpperCase() === 'N') {
+        valid = true;
+      } else {
+        alert('Please enter a valid response.');
+        displayQuestion(question);
+      }
+    } else if (index === 5) {
+      if (!isNaN(parseInt(guess, 10))) {
+        //guess = Math.floor(guess);
+        valid = true;
+      } else {
+        alert('Please enter a valid response.');
+        displayQuestion(question);
+      }
+    } else if (index === 6) {
+      valid = true;
+    }
+  } while (!valid);
+
+  return valid;
+}
+
+function compareAnswer(guess, question, answer, msg1, msg2, index) {
+  if (guess.toUpperCase() === answer) {
+    alert(msg1);
+    totalScore++;
+    console.log(question + '\n' + userName + ' answered: ' + guess + '\nCorrect answer: ' + answer + '\n' + userName + '\'s score: ' + totalScore);
+    resultsString += question + '\n' + userName + ' answered: ' + guess + '\nCorrect answer: ' + answer + '\n' + userName + '\'s score: ' + totalScore + '\n\n';
+  } else if (index === 5) {
+    randomNumberGame(userGuess, questions[i], randNumAnswer, correctMessage);
+  } else if (index === 6) {
+    multChoiceGame(userGuess, questions[i], animalOne, animalTwo, animalThree, correctMessage, messageFive);
+  } else {
+    alert(msg2);
+    console.log(question + '\n' + userName + ' answered: ' + guess + '\nCorrect answer: ' + answer + '\n' + userName + '\'s score: ' + totalScore);
+    resultsString += question + '\n' + userName + ' answered: ' + guess + '\nCorrect answer: ' + answer + '\n' + userName + '\'s score: ' + totalScore + '\n\n';
+  }
+}
+
+function randomNumberGame(guess, question, answer, msg1) {
+  var attempts = 4;
+  if (attempts > 0) {
+    if (guess === answer) {
+      alert(msg1);
+      totalScore++;
+      console.log(question + '\n' + userName + ' answered: ' + guess + '\nCorrect answer: ' + answer + '\n' + userName + '\'s score: ' + totalScore);
+    } else if (guess > answer) {
+      attempts--;
+      alert('You guessed a little too high. ' + attempts + ' attempts remaining.');
+      console.log('User has ' + attempts + ' attempts left.');
+    } else if (guess < answer) {
+      attempts--;
+      alert('You guessed a little too low. ' + attempts + ' attempts remaining.');
+      console.log('User has ' + attempts + ' attempts left.');
+    }
+  } else {
+    alert('Out of attempts. The correct answer was: ' + answer + '.');
+    console.log('User is out of attempts.');
+    console.log(question + '\n' + userName + ' answered: ' + guess + '\nCorrect answer: ' + answer + '\n' + userName + '\'s score: ' + totalScore);
+    resultsString += question + '\n' + userName + ' answered: ' + guess + '\nCorrect answer: ' + answer + '\n' + userName + '\'s score: ' + totalScore + '\n\n';
+  }
+}
+
+function multChoiceGame(guess, question, answer1, answer2, answer3, msg1, msg2) {
+  var attempts = 6;
+  console.log(answer1 + ' ' + answer2 + ' ' + answer3 + ' ');
+  if (attempts > 0) {
+    if (guess.toUpperCase() === answer1 || guess.toUpperCase() === answer2 || guess.toUpperCase() === answer3) {
+      alert(msg1);
+      totalScore++;
+      console.log(question + '\n' + userName + ' answered: ' + guess + '\nCorrect answers: ' + answer + '\n' + userName + '\'s score: ' + totalScore);
+      resultsString += question + '\n' + userName + ' answered: ' + guess + '\nCorrect answer: ' + answer + '\n' + userName + '\'s score: ' + totalScore + '\n\n';
+    } else {
+      attempts--;
+      alert('Sorry, that\'s not one of them. ' + attempts + ' remaining.');
+      console.log('User has ' + attempts + ' attempts left.');
+    }
+  } else {
+    alert('Out of attempts. The correct answers were: ' + answer + '.');
+    console.log('User is out of attempts.');
+    console.log(question + '\n' + userName + ' answered: ' + guess + '\nCorrect answers: ' + answer1 + ' ' + answer2 + ' ' + answer3 + '\n' + userName + '\'s score: ' + totalScore);
+    resultsString += question + '\n' + userName + ' answered: ' + guess + '\nCorrect answer: ' + answer + '\n' + userName + '\'s score: ' + totalScore + '\n\n';
+  }
+}
+
+function writeToPage(element, content) {
+  element.textContent = content;
+}
+
+//start of the guessing game
+
+userConfirm = getUserConfirm(welcomeMessage);
+
+userName = getUserName(messageOne);
+
+for (var i = 0; i < answers.length; i++) {
+  userGuess = displayQuestion(questions[i]);
+
+  var isValid = isValidResponse(userGuess, i, questions[i]);
+
+  compareAnswer(userGuess, questions[i], answers[i], correctMessage, wrongMessage);
+}
+
+writeToPage(resultsToPage, resultsString);
 
 alert(goodByeMessage);
+
+//End of Game.
